@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 
 
-url = "https://api.onegov.nsw.gov.au/FuelCheckApp/v1/fuel/prices/bylocation?bottomLeftLatitude=-33.75340696086609&bottomLeftLongitude=151.1616313779297&topRightLatitude=-33.68887075066809&topRightLongitude=151.26188162207032&fueltype=E10-U91&brands=EG%20Ampol"  # noqa
+url = "https://api.onegov.nsw.gov.au/FuelCheckApp/v1/fuel/prices/bylocation?bottomLeftLatitude=-33.75340696086609&bottomLeftLongitude=151.1616313779297&topRightLatitude=-33.68887075066809&topRightLongitude=151.26188162207032&fueltype=E10-U91&brands=EG%20Ampol" # noqa
 
 
 def main():
