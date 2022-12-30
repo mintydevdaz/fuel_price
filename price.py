@@ -1,27 +1,35 @@
-import requests
 import pandas as pd
+import requests
 
-
-url = "https://api.onegov.nsw.gov.au/FuelCheckApp/v1/fuel/prices/bylocation?bottomLeftLatitude=-33.75340696086609&bottomLeftLongitude=151.1616313779297&topRightLatitude=-33.68887075066809&topRightLongitude=151.26188162207032&fueltype=E10-U91&brands=EG%20Ampol" # noqa
+from urls import urls
 
 
 def main():
-    # Request HTML
-    r = get_request()
+    items = []
+    # Get JSON from multiple URLs
+    for url in urls:
 
-    # Get JSON
-    json = get_json(response=r)
+        # Request HTML
+        r = get_request(url)
 
-    # Get fuel types and their current price
-    prices = clean(current_prices(json))
+        # Get JSON
+        json = get_json(response=r)
 
-    # Show fuel station location and its daily prices
-    print(location(json))
-    print(table(prices))
-    print('--------------------------------')
+        # Append if JSON returns single station
+        if len(json) == 1:
+            items.append(json)
+        else:
+            # Append specific stations if JSON contains multiple stations
+            items.extend(j for j in json if j.get('ServiceStationID') in [410, 643, 18424]) # noqa
+
+    for item in items:
+        prices = clean(current_prices(item))
+        print(location(item))
+        print(table(prices))
+        print('-'*40)
 
 
-def get_request():
+def get_request(url: str):
     '''Get request from Fuel Check NSW API'''
     try:
         headers = {
@@ -35,7 +43,7 @@ def get_request():
     return r
 
 
-def get_json(response: requests.models.Response) -> list[dict]:
+def get_json(response: requests.models.Response) -> list:
     '''Parse JSON'''
     try:
         r = response.json()
@@ -44,9 +52,9 @@ def get_json(response: requests.models.Response) -> list[dict]:
     return r
 
 
-def current_prices(json: list[dict]) -> list[str]:
+def current_prices(json: dict) -> list[str]:
     '''Get fuel prices from JSON'''
-    prices = json[0]['Prices']
+    prices = json['Prices']
     r = []
     for price in prices:
         r.extend(iter(price.values()))
@@ -60,9 +68,9 @@ def clean(data: list[str]) -> list:
     return list(zip(fuel_type, price))
 
 
-def location(json: list[dict]) -> str:
+def location(json: dict) -> str:
     '''Show address of fuel station'''
-    return f"{json[0]['Name']} | {json[0]['Address']}"
+    return f"{json['Name']} | {json['Address']}"
 
 
 def table(prices: list) -> pd.DataFrame:
