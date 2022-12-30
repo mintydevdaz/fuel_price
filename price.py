@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 
-from urls import urls
+from links import urls, stations
 
 
 def main():
@@ -17,11 +17,12 @@ def main():
 
         # Append if JSON returns single station
         if len(json) == 1:
-            items.append(json)
+            items.append(json[0])
         else:
             # Append specific stations if JSON contains multiple stations
-            items.extend(j for j in json if j.get('ServiceStationID') in [410, 643, 18424]) # noqa
+            items.extend(j for j in json if j.get('ServiceStationID') in stations.values()) # noqa
 
+    # Extracts prices and fuel types from JSON
     for item in items:
         prices = clean(current_prices(item))
         print(location(item))
@@ -70,10 +71,11 @@ def clean(data: list[str]) -> list:
 
 def location(json: dict) -> str:
     '''Show address of fuel station'''
-    return f"{json['Name']} | {json['Address']}"
+    return f"{json['Name']} | {json['Address']} | ID: {json['ServiceStationID']}" # noqa
 
 
 def table(prices: list) -> pd.DataFrame:
+    '''Convert fuel types and prices into a Pandas Dataframe'''
     return pd.DataFrame(prices, columns=['Fuel Type', 'Price/L'])
 
 
