@@ -25,6 +25,7 @@ def main():
     # Extracts prices and fuel types from JSON
     for item in items:
         prices = clean(current_prices(item))
+        print("")
         print(station_address(item))
         print(table(prices))
         print("-" * 40)
