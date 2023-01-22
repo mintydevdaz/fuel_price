@@ -20,7 +20,7 @@ def main():
             items.append(json[0])
         else:
             # Append specific stations if JSON contains multiple stations
-            items.extend(j for j in json if j.get('ServiceStationID') in stations.values()) # noqa
+            items.extend(j for j in json if j.get('ServiceStationID') in stations.values())  # noqa
 
     # Extracts prices and fuel types from JSON
     for item in items:
@@ -35,7 +35,7 @@ def get_request(url: str):
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"}  # noqa
-        r = requests.get(url, headers=headers, timeout=3)
+        r = requests.get(url, headers=headers, timeout=6)
         r.raise_for_status()
     except requests.exceptions.HTTPError as e:
         print(f'Error loading webpage: {e}')
@@ -71,7 +71,7 @@ def clean(data: list[str]) -> list:
 
 def location(json: dict) -> str:
     '''Show address of fuel station'''
-    return f"{json['Name']} | {json['Address']} | ID: {json['ServiceStationID']}" # noqa
+    return f"{json['Name']} | {json['Address']} | ID: {json['ServiceStationID']}"  # noqa
 
 
 def table(prices: list) -> pd.DataFrame:
